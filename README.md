@@ -10,7 +10,7 @@ This is a *Serverless* project. The repo it is setup so that on every push to th
 
 A single *Lambda* function is setup to handle all the WebSocket events (`CONNECT`, `DISCONNECT`, `MESSAGE`)
 
-* When a client `CONNECT`s the WebSocket aAPI endpoint the `ConnectionId` is saved in a DynamoDB Table Item
+* When a client `CONNECT`s to the WebSocket aAPI endpoint the `ConnectionId` is saved in a DynamoDB Table Item
 * When id `DISCONNECT`s the Item get deleted.
 * Whenever a `MESSAGE` is received the lambda function scan the DynamoDB table looking for connected clients ConnectionIds and uses `ApiGatewayManagementApi.postToConnection` method so sent the message to everybody (except the sender)
 
