@@ -12,7 +12,7 @@ A single *Lambda* function is setup to handle all the WebSocket events (`CONNECT
 
 * When a client `CONNECT`s to the WebSocket aAPI endpoint the `ConnectionId` is saved to a DynamoDB Table Item
 * When id `DISCONNECT`s the Item get deleted.
-* Whenever a `MESSAGE` is received the lambda function scan the DynamoDB table looking for connected clients ConnectionIds and uses `ApiGatewayManagementApi.postToConnection` method so sent the message to everybody (except the sender)
+* Whenever a `MESSAGE` is received the lambda function scan the DynamoDB table looking for connected clients ConnectionIds and uses `ApiGatewayManagementApi.postToConnection` method to sent the message to everybody (except the sender)
 
 ## How to use
 
