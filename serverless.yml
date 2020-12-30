@@ -4,7 +4,7 @@ provider:
   name: aws
   runtime: nodejs12.x
   stage: ${opt:stage, 'dev'}
-  #region: us-east-1
+  region: ${opt:region, 'us-east-1'}
   versionFunctions: false
   iamRoleStatements:
     - Effect: "Allow"
@@ -16,6 +16,22 @@ provider:
           - - 'arn:aws:execute-api:*:*:'
             - Ref: 'WebsocketsApi'
             - '/*/*/*'
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: #"arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE}"
+        Fn::Join:
+          - ''
+          - - 'arn:aws:dynamodb:'
+            - '${self:provider.region}:*:table/'
+            - ${self:provider.environment.DYNAMODB_TABLE}            
+  environment:
+    DYNAMODB_TABLE: '${self:service}-${self:provider.stage}-connections'
 
 functions:
   run:
@@ -33,3 +49,22 @@ functions:
       - websocket:
           route: 'doSomething'
           routeResponseSelectionExpression: $default
+
+resources:
+  Resources:
+    ConnectionsDynamoDbTable:
+      Type: 'AWS::DynamoDB::Table'
+      # DeletionPolicy: Retain
+      Properties:
+        AttributeDefinitions:
+          -
+            AttributeName: connectionId
+            AttributeType: S
+        KeySchema:
+          -
+            AttributeName: connectionId
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:provider.environment.DYNAMODB_TABLE}
